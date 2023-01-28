@@ -42,7 +42,7 @@ public class CatalogItemController : ControllerBase
     [ProducesResponseType(typeof(ItemByIdResponse), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Update(UpdateItemRequest request)
     {
-        var result = await _catalogItemService.Update(request.CatalogItem);
+        var result = await _catalogItemService.Update(request.Id, request.Name, request.Description, request.Price, request.AvailableStock, request.CatalogBrandId, request.CatalogTypeId, request.PictureFileName);
         return Ok(new ItemByIdResponse()
         {
             Id = result.Id,

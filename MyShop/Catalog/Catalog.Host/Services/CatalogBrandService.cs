@@ -33,11 +33,11 @@ public class CatalogBrandService : BaseDataService<ApplicationDbContext>, ICatal
         return ExecuteSafeAsync(() => _catalogBrandRepository.DeleteAsync(id));
     }
 
-    public Task<CatalogBrandDto> Update(CatalogBrand catalogBrand)
+    public Task<CatalogBrandDto> Update(int id, string brand)
     {
         return ExecuteSafeAsync(async () =>
         {
-            var result = await _catalogBrandRepository.UpdateAsync(catalogBrand);
+            var result = await _catalogBrandRepository.UpdateAsync(new CatalogBrand() { Id = id, Brand = brand });
             return _mapper.Map<CatalogBrandDto>(result);
         });
     }

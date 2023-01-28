@@ -69,7 +69,7 @@ public class CatalogItemRepository : ICatalogItemRepository
         var result = await _dbContext.CatalogItems
             .Include(i => i.CatalogBrand)
             .Include(i => i.CatalogType)
-            .Where(w => w.CatalogBrand.Brand == brand)
+            .Where(w => w.CatalogBrand!.Brand == brand)
             .OrderBy(c => c.Name)
             .Skip(pageSize * pageIndex)
             .Take(pageSize)
@@ -85,7 +85,7 @@ public class CatalogItemRepository : ICatalogItemRepository
         var result = await _dbContext.CatalogItems
             .Include(i => i.CatalogBrand)
             .Include(i => i.CatalogType)
-            .Where(w => w.CatalogType.Type == type)
+            .Where(w => w.CatalogType!.Type == type)
             .OrderBy(c => c.Name)
             .Skip(pageSize * pageIndex)
             .Take(pageSize)
@@ -129,14 +129,10 @@ public class CatalogItemRepository : ICatalogItemRepository
         return true;
     }
 
-    public async Task<CatalogItem> UpdateAsync(CatalogItem catalogItem)
+    public async Task<CatalogItem?> UpdateAsync(CatalogItem catalogItem)
     {
-        if (catalogItem.Id != default)
-        {
-            _dbContext.Entry(catalogItem).State = EntityState.Modified;
-            await _dbContext.SaveChangesAsync();
-        }
-
+        _dbContext.Entry(catalogItem).State = EntityState.Modified;
+        await _dbContext.SaveChangesAsync();
         return catalogItem;
     }
 }

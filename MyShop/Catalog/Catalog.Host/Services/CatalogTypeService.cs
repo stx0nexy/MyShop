@@ -33,11 +33,11 @@ public class CatalogTypeService : BaseDataService<ApplicationDbContext>, ICatalo
         return ExecuteSafeAsync(() => _catalogTypeRepository.DeleteAsync(id));
     }
 
-    public Task<CatalogTypeDto> Update(CatalogType catalogType)
+    public Task<CatalogTypeDto> Update(int id, string type)
     {
         return ExecuteSafeAsync(async () =>
         {
-            var result = await _catalogTypeRepository.UpdateAsync(catalogType);
+            var result = await _catalogTypeRepository.UpdateAsync(new CatalogType() { Id = id, Type = type });
             return _mapper.Map<CatalogTypeDto>(result);
         });
     }

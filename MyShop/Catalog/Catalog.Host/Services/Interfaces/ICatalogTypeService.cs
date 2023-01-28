@@ -7,5 +7,5 @@ public interface ICatalogTypeService
 {
     Task<int?> Add(string type);
     Task<bool> Delete(int id);
-    Task<CatalogTypeDto> Update(CatalogType catalogBrand);
+    Task<CatalogTypeDto> Update(int id, string type);
 }

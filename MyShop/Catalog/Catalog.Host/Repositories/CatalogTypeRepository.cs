@@ -39,14 +39,16 @@ public class CatalogTypeRepository : ICatalogTypeRepository
         return true;
     }
 
-    public async Task<CatalogType> UpdateAsync(CatalogType catalogType)
+    public async Task<CatalogType?> UpdateAsync(CatalogType catalogType)
     {
-        if (catalogType.Id != default)
-        {
-            _dbContext.Entry(catalogType).State = EntityState.Modified;
-            await _dbContext.SaveChangesAsync();
-        }
-
+        _dbContext.Entry(catalogType).State = EntityState.Modified;
+        await _dbContext.SaveChangesAsync();
         return catalogType;
+    }
+
+    public async Task<CatalogType?> GetByIdAsync(int id)
+    {
+        var result = await _dbContext.CatalogTypes.Where(i => i.Id == id).FirstOrDefaultAsync();
+        return result;
     }
 }

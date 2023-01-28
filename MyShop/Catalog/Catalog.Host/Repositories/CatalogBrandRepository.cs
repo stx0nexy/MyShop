@@ -39,14 +39,16 @@ public class CatalogBrandRepository : ICatalogBrandRepository
         return true;
     }
 
-    public async Task<CatalogBrand> UpdateAsync(CatalogBrand catalogBrand)
+    public async Task<CatalogBrand?> UpdateAsync(CatalogBrand catalogBrand)
     {
-        if (catalogBrand.Id != default)
-        {
-            _dbContext.Entry(catalogBrand).State = EntityState.Modified;
-            await _dbContext.SaveChangesAsync();
-        }
-
+        _dbContext.Entry(catalogBrand).State = EntityState.Modified;
+        await _dbContext.SaveChangesAsync();
         return catalogBrand;
+    }
+
+    public async Task<CatalogBrand?> GetByIdAsync(int id)
+    {
+       var result = await _dbContext.CatalogBrands.Where(i => i.Id == id).FirstOrDefaultAsync();
+       return result;
     }
 }

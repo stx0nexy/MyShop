@@ -6,5 +6,6 @@ public interface ICatalogTypeRepository
 {
     Task<int?> Add(string type);
     Task<bool> DeleteAsync(int id);
-    Task<CatalogType> UpdateAsync(CatalogType catalogBrand);
+    Task<CatalogType?> UpdateAsync(CatalogType catalogBrand);
+    Task<CatalogType?> GetByIdAsync(int id);
 }
