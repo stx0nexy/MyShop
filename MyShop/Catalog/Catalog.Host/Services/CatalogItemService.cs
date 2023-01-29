@@ -34,7 +34,7 @@ public class CatalogItemService : BaseDataService<ApplicationDbContext>, ICatalo
         return ExecuteSafeAsync(() => _catalogItemRepository.Add(name, description, price, availableStock, catalogBrandId, catalogTypeId, pictureFileName));
     }
 
-    public Task<bool> Delete(int id)
+    public Task<bool?> Delete(int id)
     {
         return ExecuteSafeAsync(() => _catalogItemRepository.DeleteAsync(id));
     }

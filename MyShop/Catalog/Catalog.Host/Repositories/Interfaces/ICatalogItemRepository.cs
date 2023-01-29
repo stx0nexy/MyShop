@@ -12,6 +12,6 @@ public interface ICatalogItemRepository
     Task<PaginatedItems<CatalogItem>> GetByTypeAsync(string type, int pageIndex, int pageSize);
     Task<PaginatedItems<CatalogBrand>> GetBrandsAsync(int pageIndex, int pageSize);
     Task<PaginatedItems<CatalogType>> GetTypesAsync(int pageIndex, int pageSize);
-    Task<bool> DeleteAsync(int id);
+    Task<bool?> DeleteAsync(int id);
     Task<CatalogItem?> UpdateAsync(CatalogItem catalogItem);
 }

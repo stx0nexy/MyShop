@@ -31,7 +31,7 @@ public class CatalogBrandRepository : ICatalogBrandRepository
         return item.Entity.Id;
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool?> DeleteAsync(int id)
     {
         CatalogBrand result = await _dbContext.CatalogBrands.FirstAsync(c => c.Id == id);
         _dbContext.CatalogBrands.Remove(result);

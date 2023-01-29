@@ -31,7 +31,7 @@ public class CatalogTypeRepository : ICatalogTypeRepository
         return item.Entity.Id;
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool?> DeleteAsync(int id)
     {
         CatalogType result = await _dbContext.CatalogTypes.FirstAsync(c => c.Id == id);
         _dbContext.CatalogTypes.Remove(result);

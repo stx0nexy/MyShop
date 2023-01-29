@@ -28,7 +28,7 @@ public class CatalogTypeService : BaseDataService<ApplicationDbContext>, ICatalo
         return ExecuteSafeAsync(() => _catalogTypeRepository.Add(brand));
     }
 
-    public Task<bool> Delete(int id)
+    public Task<bool?> Delete(int id)
     {
         return ExecuteSafeAsync(() => _catalogTypeRepository.DeleteAsync(id));
     }

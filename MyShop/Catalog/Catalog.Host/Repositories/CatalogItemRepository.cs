@@ -121,12 +121,13 @@ public class CatalogItemRepository : ICatalogItemRepository
         return new PaginatedItems<CatalogType>() { TotalCount = totalItems, Data = itemsOnPage };
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool?> DeleteAsync(int id)
     {
+        bool? res = true;
         CatalogItem result = await _dbContext.CatalogItems.FirstAsync(c => c.Id == id);
         _dbContext.CatalogItems.Remove(result);
         await _dbContext.SaveChangesAsync();
-        return true;
+        return res;
     }
 
     public async Task<CatalogItem?> UpdateAsync(CatalogItem catalogItem)
