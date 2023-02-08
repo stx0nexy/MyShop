@@ -1,4 +1,4 @@
-using Catalog.Host.Data.Entities;
+﻿using Catalog.Host.Data.Entities;
 
 namespace Catalog.Host.Repositories.Interfaces;
 

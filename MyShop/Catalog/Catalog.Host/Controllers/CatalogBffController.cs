@@ -1,11 +1,9 @@
-using System.Net;
-using Catalog.Host.Data.Entities;
+using Catalog.Host.Configurations;
 using Catalog.Host.Models.Dtos;
+using Catalog.Host.Models.Enums;
 using Catalog.Host.Models.Requests;
 using Catalog.Host.Models.Response;
 using Catalog.Host.Services.Interfaces;
-using Infrastructure;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.Host.Controllers;
 
@@ -15,20 +13,23 @@ public class CatalogBffController : ControllerBase
 {
     private readonly ILogger<CatalogBffController> _logger;
     private readonly ICatalogService _catalogService;
+    private readonly IOptions<CatalogConfig> _config;
 
     public CatalogBffController(
         ILogger<CatalogBffController> logger,
-        ICatalogService catalogService)
+        ICatalogService catalogService,
+        IOptions<CatalogConfig> config)
     {
         _logger = logger;
         _catalogService = catalogService;
+        _config = config;
     }
 
     [HttpPost]
     [ProducesResponseType(typeof(PaginatedItemsResponse<CatalogItemDto>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> Items(PaginatedItemsRequest request)
+    public async Task<IActionResult> Items(PaginatedItemsRequest<CatalogTypeFilter> request)
     {
-        var result = await _catalogService.GetCatalogItemsAsync(request.PageSize, request.PageIndex);
+        var result = await _catalogService.GetCatalogItemsAsync(request.PageSize, request.PageIndex, request.Filters);
         return Ok(result);
     }
 
@@ -67,18 +68,18 @@ public class CatalogBffController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(PaginatedItemsResponse<CatalogBrandDto>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> Brands(PaginatedItemsRequest request)
+    [ProducesResponseType(typeof(ItemsResponse<CatalogBrandDto>), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> Brands()
     {
-        var result = await _catalogService.GetCatalogBrandsAsync(request.PageSize, request.PageIndex);
+        var result = await _catalogService.GetCatalogBrandsAsync();
         return Ok(result);
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(PaginatedItemsResponse<CatalogTypeDto>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> Types(PaginatedItemsRequest request)
+    [ProducesResponseType(typeof(ItemsResponse<CatalogTypeDto>), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> Types()
     {
-        var result = await _catalogService.GetCatalogBrandsAsync(request.PageSize, request.PageIndex);
+        var result = await _catalogService.GetCatalogTypesAsync();
         return Ok(result);
     }
 }

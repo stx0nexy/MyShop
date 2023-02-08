@@ -1,8 +1,6 @@
 using Catalog.Host.Data;
 using Catalog.Host.Data.Entities;
 using Catalog.Host.Repositories.Interfaces;
-using Catalog.Host.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Host.Repositories;
 
@@ -19,12 +17,23 @@ public class CatalogItemRepository : ICatalogItemRepository
         _logger = logger;
     }
 
-    public async Task<PaginatedItems<CatalogItem>> GetByPageAsync(int pageIndex, int pageSize)
+    public async Task<PaginatedItems<CatalogItem>> GetByPageAsync(int pageIndex, int pageSize, int? brandFilter, int? typeFilter)
     {
-        var totalItems = await _dbContext.CatalogItems
-            .LongCountAsync();
+        IQueryable<CatalogItem> query = _dbContext.CatalogItems;
 
-        var itemsOnPage = await _dbContext.CatalogItems
+        if (brandFilter.HasValue)
+        {
+            query = query.Where(w => w.CatalogBrandId == brandFilter.Value);
+        }
+
+        if (typeFilter.HasValue)
+        {
+            query = query.Where(w => w.CatalogTypeId == typeFilter.Value);
+        }
+
+        var totalItems = await query.LongCountAsync();
+
+        var itemsOnPage = await query
             .Include(i => i.CatalogBrand)
             .Include(i => i.CatalogType)
             .OrderBy(c => c.Name)
@@ -64,9 +73,10 @@ public class CatalogItemRepository : ICatalogItemRepository
     public async Task<PaginatedItems<CatalogItem>> GetByBrandAsync(string brand, int pageIndex, int pageSize)
     {
         var totalItems = await _dbContext.CatalogItems
-            .LongCountAsync();
+            .Where(w => w.CatalogBrand!.Brand == brand)
+            .CountAsync();
 
-        var result = await _dbContext.CatalogItems
+        var itemsOnPage = await _dbContext.CatalogItems
             .Include(i => i.CatalogBrand)
             .Include(i => i.CatalogType)
             .Where(w => w.CatalogBrand!.Brand == brand)
@@ -74,15 +84,17 @@ public class CatalogItemRepository : ICatalogItemRepository
             .Skip(pageSize * pageIndex)
             .Take(pageSize)
             .ToListAsync();
-        return new PaginatedItems<CatalogItem>() { TotalCount = totalItems, Data = result };
+
+        return new PaginatedItems<CatalogItem>() { TotalCount = totalItems, Data = itemsOnPage };
     }
 
     public async Task<PaginatedItems<CatalogItem>> GetByTypeAsync(string type, int pageIndex, int pageSize)
     {
         var totalItems = await _dbContext.CatalogItems
-            .LongCountAsync();
+            .Where(w => w.CatalogType!.Type == type)
+            .CountAsync();
 
-        var result = await _dbContext.CatalogItems
+        var itemsOnPage = await _dbContext.CatalogItems
             .Include(i => i.CatalogBrand)
             .Include(i => i.CatalogType)
             .Where(w => w.CatalogType!.Type == type)
@@ -90,32 +102,28 @@ public class CatalogItemRepository : ICatalogItemRepository
             .Skip(pageSize * pageIndex)
             .Take(pageSize)
             .ToListAsync();
-        return new PaginatedItems<CatalogItem>() { TotalCount = totalItems, Data = result };
+        return new PaginatedItems<CatalogItem>() { TotalCount = totalItems, Data = itemsOnPage };
     }
 
-    public async Task<PaginatedItems<CatalogBrand>> GetBrandsAsync(int pageIndex, int pageSize)
+    public async Task<PaginatedItems<CatalogBrand>> GetBrandsAsync()
     {
         var totalItems = await _dbContext.CatalogBrands
             .LongCountAsync();
 
         var itemsOnPage = await _dbContext.CatalogBrands
             .OrderBy(c => c.Brand)
-            .Skip(pageSize * pageIndex)
-            .Take(pageSize)
             .ToListAsync();
 
         return new PaginatedItems<CatalogBrand>() { TotalCount = totalItems, Data = itemsOnPage };
     }
 
-    public async Task<PaginatedItems<CatalogType>> GetTypesAsync(int pageIndex, int pageSize)
+    public async Task<PaginatedItems<CatalogType>> GetTypesAsync()
     {
         var totalItems = await _dbContext.CatalogTypes
             .LongCountAsync();
 
         var itemsOnPage = await _dbContext.CatalogTypes
             .OrderBy(c => c.Type)
-            .Skip(pageSize * pageIndex)
-            .Take(pageSize)
             .ToListAsync();
 
         return new PaginatedItems<CatalogType>() { TotalCount = totalItems, Data = itemsOnPage };
