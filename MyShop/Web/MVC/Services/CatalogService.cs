@@ -1,4 +1,5 @@
-﻿using MVC.Dtos;
+﻿using Infrastructure.Services.Interfaces;
+using MVC.Dtos;
 using MVC.Models.Enums;
 using MVC.Services.Interfaces;
 using MVC.ViewModels;
@@ -18,7 +19,7 @@ public class CatalogService : ICatalogService
         _logger = logger;
     }
 
-    public async Task<Catalog<CatalogItem>> GetCatalogItems(int page, int take, int? brand, int? type)
+    public async Task<Catalog> GetCatalogItems(int page, int take, int? brand, int? type)
     {
         var filters = new Dictionary<CatalogTypeFilter, int>();
 
@@ -31,7 +32,8 @@ public class CatalogService : ICatalogService
         {
             filters.Add(CatalogTypeFilter.Type, type.Value);
         }
-        var result = await _httpClient.SendAsync<Catalog<CatalogItem>, PaginatedItemsRequest<CatalogTypeFilter>>($"{_settings.Value.CatalogUrl}/items",
+        
+        var result = await _httpClient.SendAsync<Catalog, PaginatedItemsRequest<CatalogTypeFilter>>($"{_settings.Value.CatalogUrl}/items",
            HttpMethod.Post, 
            new PaginatedItemsRequest<CatalogTypeFilter>()
             {
@@ -47,8 +49,8 @@ public class CatalogService : ICatalogService
     {
         var result = await _httpClient.SendAsync<Filters<CatalogBrand>, PaginatedRequest>(
             $"{_settings.Value.CatalogUrl}/brands", HttpMethod.Post, null);
-        IEnumerable<SelectListItem> selectList =
-
+        
+        var selectList =
             from c in result.Data
             select new SelectListItem()
             {
@@ -57,15 +59,13 @@ public class CatalogService : ICatalogService
                 Value = c.Id.ToString()
             };
         return selectList.ToArray();
-
     }
 
     public async Task<IEnumerable<SelectListItem>> GetTypes()
     {
         var result = await _httpClient.SendAsync<Filters<CatalogType>, PaginatedRequest>(
             $"{_settings.Value.CatalogUrl}/types", HttpMethod.Post, null);
-        IEnumerable<SelectListItem> selectList =
-
+        var selectList =
             from c in result.Data
             select new SelectListItem()
             {
